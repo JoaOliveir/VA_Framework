@@ -1,0 +1,43 @@
+.timeline-component {
+    display: flex;
+    flex-direction: column;
+    /* float: left */
+    /* background-color: white; */
+
+}
+
+.timeline-header {
+    width: 100%;
+    border-bottom: 2px solid lightgray;
+    text-align: center;
+}
+
+.timeline-body {
+    width: 100%;
+    height: 100%;
+    /* border-right: 2px solid lightgrey; */
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.timeline-body>div {
+    flex: 0 0 auto;
+    text-align: center;
+    margin: 2px;
+    border-radius: 5px;
+    border: 1px solid lightgrey;
+}
+
+.timeline-body>div>.open-docs {
+    padding: 2px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    margin: 4px
+}
+
+.annotation {
+    border-radius: 5px;
+}

@@ -1,0 +1,46 @@
+/* @import "./Text.css"; */
+@import "./Text.css";
+@import "./ArgumentMap.css";
+@import "./NetworkGraph.css";
+@import "./Timeline.css";
+@import "./Details.css";
+@import "./Minimap.css";
+@import "./Calendar.css";
+@import "./Donut.css";
+@import "./Fingerprint.css";
+@import "./Selection.css";
+@import "./Positioning.css";
+@import "./Search.css";
+@import "./SelectedDocuments.css";
+@import "./CalendarHeatmap.css";
+@import "./Filter.css";
+@import "./dtsel.css";
+
+
+/*Reset paddings and margins*/
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.warning {
+    color: orange;
+}
+
+/*TOOLTIP*/
+.d3-tip {
+    position: absolute;
+    line-height: 1;
+    padding: 4px;
+    background: rgba(16, 46, 72, 0.85);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: "Roboto", sans-serif;
+    z-index: 100;
+}
+
+.d3-tip>p {
+    margin-bottom: 4px;
+}

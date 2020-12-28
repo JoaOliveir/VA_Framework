@@ -1,0 +1,52 @@
+.filter-component { 
+    display: flex;
+    flex-direction: column;
+    /* float: left; */
+ }
+
+.filter-header {
+    width: 100%;
+    border-bottom: 2px solid lightgray;
+    text-align: center;
+    padding: 3px;
+}
+
+.filter-body {
+    display: flex;
+    flex-direction: column;
+    padding: 5px
+}
+
+.filter-body>.conjunto {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding-top: 5px;
+}
+
+
+.filters {
+    display: flex;
+    align-items: flex-start;
+    /* justify-content: space-around; */
+}
+
+.date-picker{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding: 5px;
+}
+
+.date-picker>input{
+    width: 30%;
+}
+.reset{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 3px;
+}

@@ -1,0 +1,225 @@
+.calendar-component {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    /* float: left; */
+
+    /* padding: 3px; */
+    /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
+}
+
+.calendar-header {
+    width: 100%;
+    border-bottom: 2px solid lightgray;
+    text-align: center;
+    padding: 3px;
+}
+
+.calendar-title {
+
+    width: 100%;
+    /* border-bottom: 2px dashed lightgray; */
+    text-align: center;
+    font-weight: bold;
+}
+
+.calendar-body {
+    /* flex-grow: 1; */
+    flex: 1 1 auto;
+    /* overflow-y: auto; */
+    /* min-height: 0px; */
+    /* width: 100%; */
+    /* padding-left: 10px;
+    padding-right: 10px; */
+    /* padding-top: 5px; */
+    /* overflow: auto; */
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: flex-start;
+}
+
+
+.calendar-footer {
+    padding: 2px;
+    height: 36px;
+    width: 100%;
+    border-top: 2px solid lightgray;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+    overflow-x: hidden;
+}
+
+.calendar-footer>.open-docs {
+    flex: 0 0 auto;
+    padding: 2px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    margin: 2px
+}
+
+
+/*----------------*/
+
+.calendar {
+    /* background-color: white; */
+    /* padding: 20px; */
+    /* box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4); */
+    /* flex: 1 1 auto; */
+    font-size: 13px;
+    padding-bottom: 3px;
+    /* border-bottom: 1px solid lightgrey; */
+}
+
+.calendar .dropdown {
+    /* display: none; */
+    position: absolute;
+    background-color: #fff;
+    color: #102e4a;
+    text-align: center;
+    /* font-size: 14pt; */
+    /* padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 30px;
+    padding-right: 30px; */
+    padding: 5px;
+    /* width: 160px; */
+    left: 0px;
+    z-index: 2000;
+}
+
+.calendar .dropdown .dropdown-item {
+    cursor: pointer;
+    opacity: .7;
+    transition: .5s opacity;
+}
+
+.calendar .dropdown .dropdown-item:hover {
+    opacity: 1;
+}
+
+/* .calendar .years {
+    display: none;
+} */
+
+.calendar .title {
+    text-align: center;
+    /* font-size: 20pt; */
+}
+
+.calendar .calendar-btn {
+    float: left;
+    background-color: #102e4a;
+    /* background-color: #24aeff; */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    /* font-size: 14pt; */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: relative;
+    width: 20%;
+    cursor: pointer;
+    transition: .5s background-color;
+}
+
+.calendar .calendar-btn:hover {
+    background-color: rgba(114, 188, 212, 1);
+}
+
+.calendar .year-btn {
+    float: right;
+}
+
+.calendar .calendar-dates .days .day {
+    float: left;
+    width: 12%;
+    margin: 1%;
+    padding: 1%;
+    /* font-size: 13pt; */
+    text-align: center;
+    border-radius: 10px;
+    border: solid 1px #102e4a;
+}
+
+/* .calendar .calendar-dates .days .day:hover {
+    float: left;
+    width: 12%;
+    margin: 1%;
+    padding: 1%;
+    text-align: center;
+    border-radius: 10px;
+    border: solid 1px #102e4a;
+    background-color: lightgray;
+    opacity: 0.5;
+} */
+
+.calendar .calendar-dates .days .day.blank {
+    /* background-color: white; */
+    border: none;
+}
+
+.calendar .calendar-dates .days .day.selected {
+    background-color: #102e4a;
+    /* background-color: #1caff6; */
+    color: #102e4a;
+    cursor: pointer;
+    opacity: 1;
+    transition: .5s opacity;
+}
+
+.calendar .calendar-dates .days .day.selected:hover {
+    opacity: 1;
+}
+
+.calendar .calendar-dates .days .day.label {
+    /* height: 40px; */
+    /* background-color: white; */
+    font-size: 11px;
+    color: #102e4a;
+    border: none;
+    font-weight: bold;
+}
+
+.clear {
+    clear: both;
+}
+
+@media only screen and (max-width: 960px) {
+    .calendar {
+        width: 100%;
+        /* height: 100%; */
+        margin: 0px;
+        margin: 0px;
+        box-sizing: border-box;
+        position: relative;
+        left: 0px;
+    }
+}
+
+
+/*-------------------------------------------------------*/
+
+.calendar-docs {
+    padding: 5px;
+
+    overflow-y: auto;
+}
+
+.calendar-docs>h3 {
+    margin-bottom: 8px;
+    margin-top: 3px;
+}
+
+.calendar-docs>p {
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.docs_in_calendar:hover {
+    background-color: rgba(211, 211, 211, 0.5);
+}
