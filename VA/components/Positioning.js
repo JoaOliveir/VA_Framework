@@ -64,6 +64,7 @@ var positioningComponent = {
             speakers: [],
             filters: [],
             titles: [],
+            highlighted: []
         };
     },
     created() {
@@ -200,6 +201,18 @@ var positioningComponent = {
                     this.prepareData(this.document);
                     this.drawPositioning();
                 });
+
+                var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.document != null) {
+                        comp.prepareData(comp.document)
+                        comp.drawPositioning()
+                    }
+                });
             })
         });
         
@@ -209,9 +222,12 @@ var positioningComponent = {
                 this.clicked.id = speaker_id;
                 this.clicked.type = "SPEAKER";
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll("[class=positioning-circle]");
                 elements.forEach((el) => {
                     if (el.getAttribute("speaker_id") == speaker_id) {
+                        this.highlighted.push(speaker_id)
                         el.style.fill = this.configs.Circle_Color_Highlighted;
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     }
@@ -235,6 +251,7 @@ var positioningComponent = {
 
                 this.clicked.id = null;
                 this.clicked.type = null;
+                this.highlighted=[]
             }
         });
 
@@ -242,6 +259,8 @@ var positioningComponent = {
             if (this.configs.React_To.includes(vue_el.$el.id) || vue_el.$el.id === this.$el.id) {
                 this.clicked.id = topic;
                 this.clicked.type = "TOPIC";
+
+                this.highlighted=[]
 
                 let speakers = [];
                 this.document.annotations.nodes.forEach((node) => {
@@ -253,6 +272,7 @@ var positioningComponent = {
                 );
                 elements.forEach((el) => {
                     if (speakers.includes(el.getAttribute("speaker_id"))) {
+                        this.highlighted.push(el.getAttribute("speaker_id"))
                         el.style.fill = this.configs.Circle_Color_Highlighted;
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     } else {
@@ -275,13 +295,14 @@ var positioningComponent = {
 
                 this.clicked.id = null;
                 this.clicked.type = null;
+
+                this.highlighted=[]
             }
         });
 
         eventBus.$on("hoverSpeaker", (speaker_id, component, positioning) => {
             if (component.$el == this.$el && this.configs.Show_Tooltips) {
-                this.tooltip = d3
-                    .select("#" + component.$el.getAttribute("id"))
+                this.tooltip =  d3.select("body").append("div")
                     .append("div")
                     .attr("class", "d3-tip")
                     .attr("v-if", "showTooltip");
@@ -333,9 +354,12 @@ var positioningComponent = {
                 this.clicked.type = "NODE";
                 this.clicked.node = node;
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll("[class=positioning-circle]");
                 elements.forEach((el) => {
                     if (el.getAttribute("speaker_id") == node.speaker_id) {
+                        this.highlighted.push(el.getAttribute(node.speaker_id))
                         el.style.fill = this.configs.Circle_Color_Highlighted;
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     } 
@@ -358,6 +382,7 @@ var positioningComponent = {
                 this.clicked.id = null;
                 this.clicked.type = null;
                 this.clicked.node = null;
+                this.highlighted=[]
             }
         });
     },
@@ -710,8 +735,18 @@ var positioningComponent = {
                     .attr("speaker_id", (d) => d.speaker_id)
                     .attr("cx", (d) => x(d.total))
                     .attr("cy", height / 2)
-                    .attr("r", this.configs.Circle_Radius)
-                    .attr("fill", this.configs.Circle_Color)
+                    .attr("r", d => {
+                        if (this.highlighted.includes(d.speaker_id))
+                            return this.configs.Circle_Radius_Highlighted
+                        else
+                            return this.configs.Circle_Radius
+                    })
+                    .attr("fill", d => {
+                        if (this.highlighted.includes(d.speaker_id))
+                            return this.configs.Circle_Color_Highlighted
+                        else
+                            return this.configs.Circle_Color
+                    })
                     .on("mouseover", (d) =>
                         eventBus.$emit("hoverSpeaker", d.speaker_id, this, "SUPPORT")
                     )
@@ -849,8 +884,18 @@ var positioningComponent = {
                     .attr("speaker_id", (d) => d.speaker_id)
                     .attr("cx", (d) => x(d.total))
                     .attr("cy", height / 2)
-                    .attr("r", this.configs.Circle_Radius)
-                    .attr("fill", this.configs.Circle_Color)
+                    .attr("r", d => {
+                        if (this.highlighted.includes(d.speaker_id))
+                            return this.configs.Circle_Radius_Highlighted
+                        else
+                            return this.configs.Circle_Radius
+                    })
+                    .attr("fill", d => {
+                        if (this.highlighted.includes(d.speaker_id))
+                            return this.configs.Circle_Color_Highlighted
+                        else
+                            return this.configs.Circle_Color
+                    })
                     .on("mouseover", (d) =>
                         eventBus.$emit("hoverSpeaker", d.speaker_id, this, "AGAINST")
                     )

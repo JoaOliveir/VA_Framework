@@ -31,7 +31,8 @@ let calendarHeatmapComponent = {
                 node: null
             },
             maxDate: 0,
-            maxCount:0
+            maxCount: 0,
+            highlighted: []
         };
     },
     created() {
@@ -41,7 +42,7 @@ let calendarHeatmapComponent = {
         let configs = await import("./../../config_files/" + this.config.file);
         this.configs = configs.default;
     },
-    mounted() {
+    created() {
         eventBus.$on("setDocument", docs => {
 
             this.$nextTick(() => {
@@ -90,6 +91,17 @@ let calendarHeatmapComponent = {
 
                 if(this.docs_data.length>0)
                     this.drawCalendar(this.docs_data)
+                
+                 var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.docs_data != null) {
+                        comp.drawCalendar(comp.docs_data)
+                    }
+                });
             })
 
         })
@@ -131,11 +143,14 @@ let calendarHeatmapComponent = {
 
                 let elements = Array.from(document.querySelectorAll('[class=day]'));
 
+                this.highlighted=[]
+
                 docs.forEach(_doc => {
                     let doc_date = new Date(_doc.date)
                     elements.forEach(el => {
                         let el_date = new Date(el.getAttribute("date"))
                         if (el_date.getDate() == doc_date.getDate() && el_date.getMonth() == doc_date.getMonth() && el_date.getFullYear() == doc_date.getFullYear()) {
+                            this.highlighted.push(el_date.yyyymmdd())
                             el.style.fill = this.configs.Day_Color_Highlighted
                         }
                     })
@@ -175,6 +190,8 @@ let calendarHeatmapComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+
+                this.highlighted=[]
             }
         })
 
@@ -216,11 +233,14 @@ let calendarHeatmapComponent = {
 
                 let elements = Array.from(document.querySelectorAll('[class=day]'));
 
+                this.highlighted=[]
+
                 docs.forEach(_doc => {
                     let doc_date = new Date(_doc.date)
                     elements.forEach(el => {
                         let el_date = new Date(el.getAttribute("date"))
                         if (el_date.getDate() == doc_date.getDate() && el_date.getMonth() == doc_date.getMonth() && el_date.getFullYear() == doc_date.getFullYear()) {
+                            this.highlighted.push(el_date.yyyymmdd())
                             el.style.fill = this.configs.Day_Color_Highlighted
                         }
                     })
@@ -261,6 +281,8 @@ let calendarHeatmapComponent = {
                 this.clicked.id = null;
                 this.clicked.type = null;
                 this.clicked.node = null;
+
+                this.highlighted=[]
             }
         });
 
@@ -301,11 +323,14 @@ let calendarHeatmapComponent = {
 
                 let elements = Array.from(document.querySelectorAll('[class=day]'));
 
+                this.highlighted=[]
+
                 docs.forEach(_doc => {
                     let doc_date = new Date(_doc.date)
                     elements.forEach(el => {
                         let el_date = new Date(el.getAttribute("date"))
                         if (el_date.getDate() == doc_date.getDate() && el_date.getMonth() == doc_date.getMonth() && el_date.getFullYear() == doc_date.getFullYear()) {
+                            this.highlighted.push(el_date.yyyymmdd())
                             el.style.fill = this.configs.Day_Color_Highlighted
                         }
                     })
@@ -345,6 +370,8 @@ let calendarHeatmapComponent = {
 
                 this.clicked.id = null;
                 this.clicked.type = null;
+
+                this.highlighted=[]
             }
         });
 
@@ -364,14 +391,14 @@ let calendarHeatmapComponent = {
 
                 if (text != "") {
                     text = "<p><strong>Date: </strong>" + date + "</p><p><strong>Documents:</strong></p>" + text
-                    d3.select("#calendar-heatmap-component").append("div")
+                    d3.select("body").append("div")
                         .attr("class", "d3-tip")
                         .html(text)
                         .style("left", event.clientX + "px")
                         .style("top", event.clientY + "px");
                 } else {
                     text = "<p><strong>Date: </strong>" + date + "</p><p><strong>Documents:</strong> None</p>"
-                    d3.select("#calendar-heatmap-component").append("div")
+                    d3.select("body").append("div")
                         .attr("class", "d3-tip")
                         .html(text)
                         .style("left", event.clientX + "px")
@@ -493,13 +520,18 @@ let calendarHeatmapComponent = {
             //     return parseInt(d.count);
             // }))
 
+
+            var compo= this
+
             rect.filter(function (d) {
                     return d in lookup;
                 })
                 .style("fill", function (d) {
-                    // console.log(d)
-                    // console.log(scale(lookup[d]))
-                    return scale(lookup[d]);
+                    // console.log(this)
+                    if (compo.highlighted.includes(d))
+                        return compo.configs.Day_Color_Highlighted
+                    else
+                        return scale(lookup[d]);
                     // return d3.interpolatePuBu(scale(lookup[d]));
                 })
                 .select("title")

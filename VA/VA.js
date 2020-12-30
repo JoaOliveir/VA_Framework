@@ -11,9 +11,23 @@ import "https://d3js.org/d3.v5.js"
 //d3 tooltip lib
 // import "./d3-tip.js"
 
+//Import resize detector
+import "./element-resize-detector.min.js"
+
 
 //datePicker
 import "./dtsel.js"
+
+Date.prototype.yyyymmdd = function() {
+  var mm = this.getMonth() + 1; // getMonth() is zero-based
+  var dd = this.getDate();
+
+  return [this.getFullYear(),
+          (mm>9 ? '' : '0') + mm,
+          (dd>9 ? '' : '0') + dd
+         ].join('-');
+};
+
 
 // import "https://cdn.jsdelivr.net/npm/d3-flextree@2.0.0/build/d3-flextree.min.js"
 
@@ -39,16 +53,16 @@ head.appendChild(s);
 import mapComponent from "./components/Argument_Map.js"
 import textComponent from "./components/Text.js"
 import networkComponent from "./components/Network_Graph.js"
-import timelineComponent from "./components/Timeline.js"
+// import timelineComponent from "./components/Timeline.js"
 import detailsComponent from "./components/Details.js"
 import minimapComponent from "./components/Minimap.js"
 import calendarComponent from "./components/Calendar.js"
 import donutChartComponent from "./components/Donut_Chart.js"
 import fingerprintComponent from "./components/Fingerprint.js"
-import selectionComponent from "./components/Selection.js"
+// import selectionComponent from "./components/Selection.js"
 import positioningComponent from "./components/Positioning.js"
-import searchComponent from "./components/Search.js"
-import selectedDocumentsComponent from "./components/Selected_Documents.js"
+// import searchComponent from "./components/Search.js"
+// import selectedDocumentsComponent from "./components/Selected_Documents.js"
 import CalendarHeatmapComponent from "./components/Calendar_Heatmap.js"
 import FilterComponent from "./components/Filter.js"
 
@@ -57,23 +71,22 @@ import FilterComponent from "./components/Filter.js"
 Vue.component("map-component", mapComponent)
 Vue.component("text-component", textComponent)
 Vue.component("network-component", networkComponent)
-Vue.component("timeline-component", timelineComponent)
+// Vue.component("timeline-component", timelineComponent)
 Vue.component("details-component", detailsComponent)
 Vue.component("minimap-component", minimapComponent)
 Vue.component("calendar-component", calendarComponent)
 Vue.component("donut-chart-component", donutChartComponent)
 Vue.component("fingerprint-component", fingerprintComponent)
-Vue.component("selection-component", selectionComponent)
+// Vue.component("selection-component", selectionComponent)
 Vue.component("positioning-component", positioningComponent)
-Vue.component("search-component", searchComponent)
-Vue.component("selected-documents-component", selectedDocumentsComponent)
+// Vue.component("search-component", searchComponent)
+// Vue.component("selected-documents-component", selectedDocumentsComponent)
 Vue.component("calendar-heatmap-component", CalendarHeatmapComponent)
 Vue.component("filter-component", FilterComponent)
 
 // Vue.component("test-component", testComponent)
 
 import eventBus from './eventBus.js'
-import colors from './colors.js'
 
 const vue_instance = new Vue({
     data() {

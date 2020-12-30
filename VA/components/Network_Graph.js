@@ -33,11 +33,14 @@ var networkComponent = {
                 type: null,
                 node: null
             },
-            selected_docs_: []
+            selected_docs_: [],
+            window_width: null,
+            highlighted: []
         };
     },
     created() {
         eventBus.$on("setDocument", documents => {
+
             this.$nextTick(() => {
                 this.selected_docs_ = JSON.parse(JSON.stringify(documents))
 
@@ -83,6 +86,19 @@ var networkComponent = {
                     this.prepareData()
                     this.drawGraph()
                 });
+
+                
+                var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.document != null) {
+                        comp.prepareData()
+                        comp.drawGraph()
+                    }
+                });
             })
         });
 
@@ -97,9 +113,12 @@ var networkComponent = {
                 this.clicked.id = speaker_id
                 this.clicked.type = "SPEAKER"
 
+                this.highlighted=[]
+
                 let elements = Array.from(document.querySelectorAll('[class=network-circle]'));
                 elements.forEach(el => {
                     if (el.getAttribute("speaker_id") == speaker_id) {
+                        this.highlighted.push(speaker_id)
                         el.style.fill = this.configs.Circle_Color_Highlighted
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     } else {
@@ -120,6 +139,8 @@ var networkComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+
+                this.highlighted=[]
             }
         })
 
@@ -127,6 +148,7 @@ var networkComponent = {
             if (this.configs.React_To.includes(vue_el.$el.id) || vue_el.$el.id === this.$el.id) {
                 this.clicked.id = topic
                 this.clicked.type = "TOPIC"
+                this.highlighted= []
 
                 let speakers = []
                 this.document.annotations.nodes.forEach(node => {
@@ -137,6 +159,7 @@ var networkComponent = {
                 let elements = Array.from(document.querySelectorAll('[class=network-circle]'));
                 elements.forEach(el => {
                     if (speakers.includes(el.getAttribute("speaker_id"))) {
+                        this.highlighted.push(el.getAttribute("speaker_id"))
                         el.style.fill = this.configs.Circle_Color_Highlighted
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     } else {
@@ -157,6 +180,7 @@ var networkComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+                this.highlighted=[]
             }
         })
 
@@ -166,10 +190,13 @@ var networkComponent = {
                 this.clicked.type = "NODE"
                 this.clicked.node = node
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll('[class=network-circle]');
                 let els = Array.from(elements)
                 els.forEach(el => {
                     if (el.getAttribute("speaker_id") == node.speaker_id) {
+                        this.highlighted.push(node.speaker_id)
                         el.style.fill = this.configs.Circle_Color_Highlighted
                         el.setAttribute("r", this.configs.Circle_Radius_Highlighted)
                     } else {
@@ -192,6 +219,8 @@ var networkComponent = {
                 this.clicked.id = null
                 this.clicked.type = null
                 this.clicked.node = null
+                
+                this.highlighted=[]
             }
         })
     },
@@ -199,7 +228,7 @@ var networkComponent = {
         let configs = await import("./../../config_files/" + this.config.file);
         this.configs = configs.default;
     },
-    async mounted() {},
+    mounted() {    },
     methods: {
         openSelected(doc) {
             this.document.push(doc)
@@ -241,7 +270,7 @@ var networkComponent = {
             
 
                 if (text != "") {
-                    d3.select("#calendar-heatmap-component").append("div")
+                     d3.select("body").append("div")
                         .attr("class", "d3-tip")
                         .html(text)
                         .style("left", event.clientX + "px")
@@ -396,7 +425,6 @@ var networkComponent = {
                     .attr("stroke", "#aaa")
                     .attr("stroke-width", "2px");
 
-                // let _speakers = this.speakers
                 var node = container.append("g").attr("class", "nodes")
                     .selectAll("g")
                     .data(this.nodes)
@@ -404,10 +432,17 @@ var networkComponent = {
                     .append("circle")
                     .attr("class", "network-circle")
                     .attr("speaker_id", d => d.id)
-                    .attr("r", this.configs.Circle_Radius)
+                    .attr("r", d => {
+                        if (this.highlighted.includes(d.id))
+                            return this.configs.Circle_Radius_Highlighted
+                        else
+                            return this.configs.Circle_Radius
+                    })
                     .attr("fill", d => {
-                        return this.configs.Circle_Color
-                        // return "rgba(16, 46, 74, 0.8)"
+                        if (this.highlighted.includes(d.id))
+                            return this.configs.Circle_Color_Highlighted
+                        else
+                            return this.configs.Circle_Color
                     })
 
                 node.on("mouseover", d => { 
@@ -560,11 +595,11 @@ var networkComponent = {
         },
         component_width() {
             // console.log("network graph width changed");
-            this.drawGraph()
+            // this.drawGraph()
         },
         component_height() {
             // console.log("network graph height changed");
-            this.drawGraph()
+            // this.drawGraph()
         },
     },
 };

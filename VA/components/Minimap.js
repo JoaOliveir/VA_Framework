@@ -32,6 +32,7 @@ let minimapComponent = {
                 node: null,
             },
             selected_docs_: [],
+            highlighted:[]
         };
     },
     created() {
@@ -80,6 +81,17 @@ let minimapComponent = {
                 this.$nextTick(() => {
                     this.drawMinimap();
                 });
+
+                 var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.document != null) {
+                        comp.drawMinimap()
+                    }
+                });
             })
         });
 
@@ -94,10 +106,14 @@ let minimapComponent = {
                 this.clicked.id = speaker_id;
                 this.clicked.type = "SPEAKER";
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll("[class=minimap-circle]");
                 elements.forEach((el) => {
-                    if (el.getAttribute("speaker_id") == speaker_id)
+                    if (el.getAttribute("speaker_id") == speaker_id) {
+                        this.highlighted.push(el.getAttribute("node_id"))
                         el.style.fill = this.configs.Circle_Highlight_Color;
+                    }
                     else {
                         el.style.fill = this.configs.Circle_Color;
                     }
@@ -114,6 +130,7 @@ let minimapComponent = {
 
                 this.clicked.id = null;
                 this.clicked.type = null;
+                this.highlighted=[]
             }
         });
 
@@ -121,6 +138,8 @@ let minimapComponent = {
             if (this.configs.React_To.includes(vue_el.$el.id) || vue_el.$el.id === this.$el.id) {
                 this.clicked.id = topic;
                 this.clicked.type = "TOPIC";
+
+                this.highlighted=[]
 
                 let nodes = [];
                 this.document.annotations.nodes.forEach((node) => {
@@ -132,6 +151,7 @@ let minimapComponent = {
                 );
                 elements.forEach((el) => {
                     if (nodes.includes(el.getAttribute("node_id"))) {
+                        this.highlighted.push(el.getAttribute("node_id"))
                         el.style.fill = this.configs.Circle_Highlight_Color;
                     } else {
                         el.style.fill = this.configs.Circle_Color;
@@ -150,13 +170,13 @@ let minimapComponent = {
 
                 this.clicked.id = null;
                 this.clicked.type = null;
+                this.highlighted=[]
             }
         });
 
         eventBus.$on("hoverNode", (node, component) => {
             if (component.$el == this.$el && this.configs.Show_Tooltip_On_Hover_Node) {
-                this.tooltip = d3
-                    .select("#" + component.$el.getAttribute("id"))
+                this.tooltip =  d3.select("body").append("div")
                     .append("div")
                     .attr("class", "d3-tip")
                     .attr("v-if", "showTooltip");
@@ -243,9 +263,12 @@ let minimapComponent = {
                 this.clicked.type = "NODE";
                 this.clicked.node = node;
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll("[class=minimap-circle]");
                 elements.forEach((el) => {
                     if (el.getAttribute("node_id") == node.id) {
+                        this.highlighted.push(el.getAttribute("node_id"))
                         el.style.fill = this.configs.Circle_Highlight_Color;
                     } else {
                         el.style.fill = this.configs.Circle_Color;
@@ -263,6 +286,7 @@ let minimapComponent = {
                 this.clicked.id = null;
                 this.clicked.type = null;
                 this.clicked.node = null;
+                this.highlighted=[]
             }
         });
     },
@@ -507,9 +531,16 @@ let minimapComponent = {
                         return y((d.ranges[0] + d.ranges[1]) / 2);
                     })
                     .attr("cx", width / 2 + extra_height)
-                    .attr("r", this.configs.Circle_Radius)
+                    .attr("r", d => {
+                        // if (this.highlighted.includes(d.id))
+                        //     return this.configs.Circle_Highlight_Color
+                        return this.configs.Circle_Radius
+                    })
                     .attr("fill", (d) => {
-                        return this.configs.Circle_Color;
+                        if (this.highlighted.includes(d.id))
+                            return this.configs.Circle_Highlight_Color
+                        else
+                            return this.configs.Circle_Color;
                     })
                     .on("mouseover", (d) => {
                         eventBus.$emit("hoverNode", d, this);

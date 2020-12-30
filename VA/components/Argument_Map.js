@@ -31,7 +31,8 @@ var mapComponent = {
                 type: null,
                 node: null
             },
-            selected_docs_: []
+            selected_docs_: [],
+            highlighted:[]
         }
     },
     async beforeMount() {
@@ -85,6 +86,18 @@ var mapComponent = {
                     this.prepareDataForMap(this.document)
                     this.drawMap()
                 });
+
+                var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.document != null) {
+                        comp.prepareDataForMap(comp.document)
+                        comp.drawMap()
+                    }
+                });
             })
         });
 
@@ -95,9 +108,12 @@ var mapComponent = {
                 this.clicked.id = speaker_id
                 this.clicked.type = "SPEAKER"
 
+                this.highlighted =[]
+
                 let elements = Array.from(document.querySelectorAll('[class=tree-node]'));
                 elements.forEach(el => {
                     if (el.getAttribute("speaker_id") == speaker_id) {
+                        this.highlighted.push(el.getAttribute("node_id"))
                         el.style.backgroundColor = this.configs.Box_Background_Color_Highlighted
                         el.style.color = this.configs.Text_Color_Highlighted
                     } else {
@@ -117,6 +133,7 @@ var mapComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+                this.highlighted =[]
             }
         })
 
@@ -124,6 +141,7 @@ var mapComponent = {
             if (this.configs.React_To.includes(vue_el.$el.id) || vue_el.$el.id === this.$el.id) {
                 this.clicked.id = topic
                 this.clicked.type = "TOPIC"
+                this.highlighted =[]
 
                 let nodes = []
                 this.document.annotations.nodes.forEach(node => {
@@ -134,6 +152,7 @@ var mapComponent = {
                 let elements = Array.from(document.querySelectorAll('[class=tree-node]'));
                 elements.forEach(el => {
                     if (nodes.includes(el.getAttribute("node_id"))) {
+                         this.highlighted.push(el.getAttribute("node_id"))
                         el.style.backgroundColor = this.configs.Box_Background_Color_Highlighted
                         el.style.color = this.configs.Text_Color_Highlighted
                     } else {
@@ -153,6 +172,7 @@ var mapComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+                this.highlighted =[]
             }
         })
 
@@ -163,10 +183,13 @@ var mapComponent = {
                 this.clicked.type = "NODE"
                 this.clicked.node = node
 
+                this.highlighted =[]
+
                 let elements = document.querySelectorAll('[class=tree-node]');
                 let els = Array.from(elements)
                 els.forEach(el => {
                     if (el.getAttribute("node_id") == node.id) {
+                        this.highlighted.push(el.getAttribute("node_id"))
                         el.style.backgroundColor = this.configs.Box_Background_Color_Highlighted
                         el.style.color = this.configs.Text_Color_Highlighted
                         if (this.$el != vue_el.$el && this.configs.Scroll_On_Selection)
@@ -192,18 +215,22 @@ var mapComponent = {
                 this.clicked.id = null
                 this.clicked.type = null
                 this.clicked.node = null
+
+                this.highlighted =[]
             }
         })
 
         eventBus.$on("hoverNode", (node, component) => {
             if (component.$el == this.$el && this.configs.Show_Tooltip_On_Hover_Node) {
-                this.tooltip = d3.select("#" + component.$el.getAttribute("id")).append("div")
+                this.tooltip = d3.select("body").append("div")
                     .attr("class", "d3-tip")
                     .attr("v-if", "showTooltip")
 
                 let speaker_name = this.document.speakers.find(
                     (spk) => spk.id == node.speaker_id
                 ).name;
+
+                // console.log(event.clientX)
 
                 let doc = this.documents.filter(_doc => _doc.annotations.nodes.filter(_node => _node.id == node.id).length > 0)
 
@@ -446,10 +473,18 @@ var mapComponent = {
                     .append("xhtml:div")
                     .attr("id", node => `map_node_${node.data.id}`)
                     .attr("class", `tree-node`)
-                    .attr("style", `
-                        color: ${this.configs.Text_Color};
-                        background-color: ${this.configs.Box_Background_Color};
-                    `)
+                    .attr("style", node => {
+                        if (this.highlighted.includes(node.data.id))
+                            return `
+                                color: ${this.configs.Text_Color_Highlighted};
+                                background-color: ${this.configs.Box_Background_Color_Highlighted};
+                                `
+                        else
+                            return `
+                                color: ${this.configs.Text_Color};
+                                background-color: ${this.configs.Box_Background_Color};
+                                `
+                    })
                     .attr("node_id", node => node.data.id)
                     .attr("speaker_id", node => node.data.speaker_id)
                     .on("click", node => this.selectNode(node, this))

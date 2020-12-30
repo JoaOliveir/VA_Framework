@@ -29,7 +29,8 @@ var donutComponent = {
                 type: null,
                 node: null
             },
-            selected_docs_: []
+            selected_docs_: [],
+            highlighted:[]
         };
     },
     created() {
@@ -79,6 +80,18 @@ var donutComponent = {
                     this.prepareData()
                     this.drawChart()
                 });
+
+                 var erd = elementResizeDetectorMaker();
+                var comp = this
+
+                erd.listenTo(this.$el, function(element) {
+                    // var width = element.offsetWidth;
+                    // var height = element.offsetHeight;
+                    if (comp.document != null) {
+                        comp.prepareData()
+                        comp.drawChart()
+                    }
+                });
             })
         });
 
@@ -88,6 +101,8 @@ var donutComponent = {
             if (this.configs.React_To.includes(vue_el.$el.id) || vue_el.$el.id === this.$el.id) {
                 this.clicked.id = speaker_id
                 this.clicked.type = "SPEAKER"
+
+                this.highlighted=[]
 
                 let topics = []
                 this.document.annotations.nodes.forEach(node => {
@@ -101,8 +116,10 @@ var donutComponent = {
                 let elements = document.querySelectorAll('[class=donut-slice]');
                 // console.log(elements)
                 elements.forEach(el => {
-                    if (topics.includes(el.getAttribute("topic")))
+                    if (topics.includes(el.getAttribute("topic"))) {
+                        this.highlighted.push(el.getAttribute("topic"))
                         el.style.fill = this.configs.Arc_Color_Highlighted
+                    }
                     else {
                         el.style.fill = this.configs.Arc_Color
                     }
@@ -138,6 +155,8 @@ var donutComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+
+                this.highlighted=[]
             }
         })
 
@@ -146,10 +165,14 @@ var donutComponent = {
                 this.clicked.id = topic
                 this.clicked.type = "TOPIC"
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll('[class=donut-slice]');
                 elements.forEach(el => {
-                    if (el.getAttribute("topic") == topic)
+                    if (el.getAttribute("topic") == topic) {
+                        this.highlighted.push(el.getAttribute("topic"))
                         el.style.fill = this.configs.Arc_Color_Highlighted
+                    }
                     else {
                         el.style.fill = this.configs.Arc_Color
                     }
@@ -180,12 +203,14 @@ var donutComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+
+                this.highlighted=[]
             }
         })
 
         eventBus.$on("hoverTopic", (topic, component) => {
             if (component.$el == this.$el && this.configs.Show_Tooltips) {
-                this.tooltip = d3.select("#" + component.$el.getAttribute("id")).append("div")
+                this.tooltip =  d3.select("body").append("div")
                     .attr("class", "d3-tip")
                     .attr("v-if", "showTooltip")
 
@@ -211,10 +236,14 @@ var donutComponent = {
                 this.clicked.id = node.id
                 this.clicked.type = "NODE"
 
+                this.highlighted=[]
+
                 let elements = document.querySelectorAll('[class=donut-slice]');
                 elements.forEach(el => {
-                    if (node.topics.includes(el.getAttribute("topic")))
+                    if (node.topics.includes(el.getAttribute("topic"))) {
+                        this.highlighted.push(el.getAttribute("topic"))
                         el.style.fill = this.configs.Arc_Color_Highlighted
+                    }
                     else {
                         el.style.fill = this.configs.Arc_Color
                     }
@@ -245,6 +274,8 @@ var donutComponent = {
 
                 this.clicked.id = null
                 this.clicked.type = null
+
+                this.highlighted=[]
             }
         })
     },
@@ -347,7 +378,12 @@ var donutComponent = {
                     .enter()
                     .append('path')
                     .attr('d', arc)
-                    .attr('fill', this.configs.Arc_Color)
+                    .attr('fill', d => {
+                        if (this.highlighted.includes(d.data.key))
+                            return this.configs.Arc_Color_Highlighted
+                        else
+                            return this.configs.Arc_Color
+                    })
                     .attr("class", "donut-slice")
                     .attr("topic", d => d.data.key)
                     .attr("stroke", this.configs.Sections_Outline_Color)
